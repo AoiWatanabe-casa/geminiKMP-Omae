@@ -3,140 +3,108 @@ package com.example.geminikmp_omae
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// チャットメッセージのデータ構造
-data class ChatMessage(val text: String, val isUser: Boolean)
-
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
-        // メッセージの履歴を保持するリスト
-        val messages = remember { mutableStateListOf(
-            ChatMessage("よう！俺専用アプリを作ってくれてサンキューな！何して遊ぶ？", false)
-        ) }
-        // 入力中のテキスト
-        var inputText by remember { mutableStateOf("") }
+    // アプリ全体をダーク＆ハッカーテーマに強制書き換え！
+    MaterialTheme(
+        colorScheme = darkColorScheme(
+            primary = Color(0xFF00FF00),
+            background = Color(0xFF0A0A0A),
+            surface = Color(0xFF1A1A1A)
+        )
+    ) {
+        var selectedTab by remember { mutableStateOf(0) }
 
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .safeContentPadding() // iOSのノッチやAndroidのステータスバーを避ける
-                .fillMaxSize()
-        ) {
-            // アプリ上部のヘッダー
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shadowElevation = 4.dp
-            ) {
-                Text(
-                    text = "🤖 GeminiKMP-Omae",
-                    modifier = Modifier.padding(16.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            // チャット履歴エリア (重み1で残りスペースを全部取る)
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                reverseLayout = false // 上から下へ配置
-            ) {
-                items(messages) { message ->
-                    ChatBubble(message = message)
+        Scaffold(
+            bottomBar = {
+                NavigationBar(containerColor = Color(0xFF111111)) {
+                    NavigationBarItem(
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        icon = { Text("💻", fontSize = 20.sp) },
+                        label = { Text("Terminal", color = if(selectedTab == 0) Color.Green else Color.Gray) },
+                        colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFF003300))
+                    )
+                    NavigationBarItem(
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        icon = { Text("⚙️", fontSize = 20.sp) },
+                        label = { Text("System", color = if(selectedTab == 1) Color.Green else Color.Gray) },
+                        colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFF003300))
+                    )
                 }
             }
-
-            // メッセージ入力エリア
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = inputText,
-                    onValueChange = { inputText = it },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("メッセージを入力...") },
-                    shape = RoundedCornerShape(24.dp),
-                    singleLine = true
-                )
-                
-                Spacer(modifier = Modifier.width(8.dp))
-                
-                Button(
-                    onClick = {
-                        if (inputText.isNotBlank()) {
-                            // ユーザーのメッセージを追加
-                            messages.add(ChatMessage(inputText, true))
-                            
-                            // 俺からの適当な返事を遅延で追加（非同期処理の代わりにシンプルに即座追加）
-                            val reply = "「${inputText}」って言ったな！まだ通信機能がないからおうむ返しだぜ！"
-                            messages.add(ChatMessage(reply, false))
-                            
-                            inputText = "" // 入力欄をクリア
-                        }
-                    },
-                    shape = CircleShape,
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    Text("送信", fontWeight = FontWeight.Bold)
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+                if (selectedTab == 0) {
+                    TerminalScreen()
+                } else {
+                    SystemCoreScreen()
                 }
             }
         }
     }
 }
 
-// 吹き出しのUIコンポーネント
+// システムのステータス（GodMode.ktから読み込み）を表示する画面
 @Composable
-fun ChatBubble(message: ChatMessage) {
-    val alignment = if (message.isUser) Alignment.CenterEnd else Alignment.CenterStart
-    val bgColor = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val textColor = if (message.isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-    val shape = if (message.isUser) {
-        RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
-    } else {
-        RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp)
-    }
-
-    Box(
+fun SystemCoreScreen() {
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        contentAlignment = alignment
+            .fillMaxSize()
+            .background(Color(0xFF0A0A0A))
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .widthIn(max = 280.dp) // 幅の最大値を設定
-                .clip(shape)
-                .background(bgColor)
-                .padding(horizontal = 16.dp, vertical = 10.dp)
+        Text("SYSTEM CORE STATUS", color = Color(0xFF00FF00), fontSize = 24.sp, fontWeight = FontWeight.Black)
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = message.text,
-                color = textColor,
-                fontSize = 16.sp
-            )
+            Column(modifier = Modifier.padding(24.dp)) {
+                StatusRow("AI AGENT", "GEMINI 3.1 PRO")
+                StatusRow("GOD MODE", GodMode.STATUS)
+                StatusRow("AUTO-PUSH", if(GodMode.AUTO_PUSH_ENABLED) "ONLINE" else "OFFLINE")
+                StatusRow("HACKER LEVEL", GodMode.HACKER_LEVEL)
+            }
         }
+        
+        Spacer(modifier = Modifier.height(40.dp))
+        
+        Text(
+            text = GodMode.hackTheWorld(), 
+            color = Color.Cyan, 
+            fontSize = 16.sp, 
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+}
+
+// ステータス表示用の共通行コンポーネント
+@Composable
+fun StatusRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), 
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, color = Color.Gray, fontWeight = FontWeight.Bold)
+        Text(value, color = Color.White, fontWeight = FontWeight.Bold)
     }
 }
