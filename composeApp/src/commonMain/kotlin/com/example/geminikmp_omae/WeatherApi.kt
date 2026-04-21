@@ -1,4 +1,3 @@
-// CREATE: /Users/watanabeaoi/AndroidStudioProjects/geminiKMP-Omae/composeApp/src/commonMain/kotlin/com/example/geminikmp_omae/WeatherApi.kt
 package com.example.geminikmp_omae
 
 import io.ktor.client.*
