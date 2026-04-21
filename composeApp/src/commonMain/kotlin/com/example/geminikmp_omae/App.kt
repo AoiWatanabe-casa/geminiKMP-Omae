@@ -1,5 +1,6 @@
 package com.example.geminikmp_omae
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,15 +9,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
+
+// ★錬成した画像をインポート！
+import geminikmpomae.composeapp.generated.resources.Res
+import geminikmpomae.composeapp.generated.resources.omae_bg
 
 @Composable
 @Preview
 fun App() {
-    // アプリ全体をダーク＆ハッカーテーマに強制書き換え！
     MaterialTheme(
         colorScheme = darkColorScheme(
             primary = Color(0xFF00FF00),
@@ -26,44 +32,54 @@ fun App() {
     ) {
         var selectedTab by remember { mutableStateOf(0) }
 
-        Scaffold(
-            bottomBar = {
-                NavigationBar(containerColor = Color(0xFF111111)) {
-                    NavigationBarItem(
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
-                        icon = { Text("💻", fontSize = 20.sp) },
-                        label = { Text("Terminal", color = if(selectedTab == 0) Color.Green else Color.Gray) },
-                        colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFF003300))
-                    )
-                    NavigationBarItem(
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
-                        icon = { Text("⚙️", fontSize = 20.sp) },
-                        label = { Text("System", color = if(selectedTab == 1) Color.Green else Color.Gray) },
-                        colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFF003300))
-                    )
+        Box(modifier = Modifier.fillMaxSize()) {
+            // 🔥 ハック: さっき入れた画像を背景として描画！
+            Image(
+                painter = painterResource(Res.drawable.omae_bg),
+                contentDescription = "Hacker Background",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+                alpha = 0.35f // 文字が見えやすいように少し暗く透かす
+            )
+
+            Scaffold(
+                containerColor = Color.Transparent, // Scaffold自体を透明にする
+                bottomBar = {
+                    NavigationBar(containerColor = Color(0xFF111111).copy(alpha = 0.8f)) {
+                        NavigationBarItem(
+                            selected = selectedTab == 0,
+                            onClick = { selectedTab = 0 },
+                            icon = { Text("💻", fontSize = 20.sp) },
+                            label = { Text("Terminal", color = if(selectedTab == 0) Color.Green else Color.Gray) },
+                            colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFF003300))
+                        )
+                        NavigationBarItem(
+                            selected = selectedTab == 1,
+                            onClick = { selectedTab = 1 },
+                            icon = { Text("⚙️", fontSize = 20.sp) },
+                            label = { Text("System", color = if(selectedTab == 1) Color.Green else Color.Gray) },
+                            colors = NavigationBarItemDefaults.colors(indicatorColor = Color(0xFF003300))
+                        )
+                    }
                 }
-            }
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-                if (selectedTab == 0) {
-                    TerminalScreen()
-                } else {
-                    SystemCoreScreen()
+            ) { paddingValues ->
+                Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+                    if (selectedTab == 0) {
+                        TerminalScreen()
+                    } else {
+                        SystemCoreScreen()
+                    }
                 }
             }
         }
     }
 }
 
-// システムのステータス（GodMode.ktから読み込み）を表示する画面
 @Composable
 fun SystemCoreScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0A0A))
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -72,7 +88,7 @@ fun SystemCoreScreen() {
         Spacer(modifier = Modifier.height(32.dp))
         
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A).copy(alpha = 0.8f)), // 半透明に
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -96,7 +112,6 @@ fun SystemCoreScreen() {
     }
 }
 
-// ステータス表示用の共通行コンポーネント
 @Composable
 fun StatusRow(label: String, value: String) {
     Row(
