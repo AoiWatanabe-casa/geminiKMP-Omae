@@ -1,4 +1,3 @@
-// UPDATE: /Users/watanabeaoi/AndroidStudioProjects/geminiKMP-Omae/composeApp/src/commonMain/kotlin/com/example/geminikmp_omae/App.kt
 package com.example.geminikmp_omae
 
 import androidx.compose.foundation.background
