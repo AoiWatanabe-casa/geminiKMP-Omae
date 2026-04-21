@@ -27,10 +27,12 @@ fun TerminalScreen() {
         listState.animateScrollToItem(logs.size - 1)
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.Black).padding(16.dp)) {
+    // 🔥 ハック: 背景を透明（Color.Transparent）にして後ろの画像を透けさせる！
+    Column(modifier = Modifier.fillMaxSize().background(Color.Transparent).padding(16.dp)) {
         Text("💻 G-OS TERMINAL v5.1", color = Color(0xFF00FF00), fontSize = 22.sp, fontWeight = FontWeight.Black)
         
-        Box(modifier = Modifier.weight(1f).fillMaxWidth().background(Color(0xFF111111)).padding(12.dp)) {
+        // ターミナルのログ表示エリアは半透明の黒にして読みやすくする
+        Box(modifier = Modifier.weight(1f).fillMaxWidth().background(Color(0xFF000000).copy(alpha = 0.6f)).padding(12.dp)) {
             LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
                 items(logs) { log ->
                     Text("> $log", color = Color(0xFF00FF00), fontFamily = FontFamily.Monospace, fontSize = 14.sp)
@@ -41,7 +43,6 @@ fun TerminalScreen() {
         Spacer(modifier = Modifier.height(8.dp))
         
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // 天気ハックボタン
             Button(
                 onClick = {
                     coroutineScope.launch {
@@ -52,12 +53,11 @@ fun TerminalScreen() {
                     }
                 },
                 modifier = Modifier.weight(1f).height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF004400), contentColor = Color.Green)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF004400).copy(alpha = 0.8f), contentColor = Color.Green)
             ) {
                 Text("WEATHER SYNC", fontWeight = FontWeight.Bold)
             }
 
-            // 通常ハックボタン
             Button(
                 onClick = {
                     coroutineScope.launch {
@@ -67,7 +67,7 @@ fun TerminalScreen() {
                     }
                 },
                 modifier = Modifier.weight(1f).height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00FF00), contentColor = Color.Black)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00FF00).copy(alpha = 0.8f), contentColor = Color.Black)
             ) {
                 Text("EXECUTE HACK", fontWeight = FontWeight.Bold)
             }
