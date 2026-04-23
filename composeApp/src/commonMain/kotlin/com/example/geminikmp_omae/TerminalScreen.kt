@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TerminalScreen() {
-    val logs = remember { mutableStateListOf("G-OS READY.") }
+    val logs = remember { mutableStateListOf("G-OS READY. (Windows Node Connected)") }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val weatherApi = remember { WeatherApi() }
@@ -27,9 +27,9 @@ fun TerminalScreen() {
         listState.animateScrollToItem(logs.size - 1)
     }
 
-    // 🔥 ハック: 背景を透明（Color.Transparent）にして後ろの画像を透けさせる！
+    // 🔥 ハック: 背景を透明にして後ろの画像を透けさせる
     Column(modifier = Modifier.fillMaxSize().background(Color.Transparent).padding(16.dp)) {
-        Text("💻 G-OS TERMINAL v5.1", color = Color(0xFF00FF00), fontSize = 22.sp, fontWeight = FontWeight.Black)
+        Text("💻 G-OS TERMINAL v5.2 (WIN)", color = Color(0xFF00FF00), fontSize = 22.sp, fontWeight = FontWeight.Black)
         
         // ターミナルのログ表示エリアは半透明の黒にして読みやすくする
         Box(modifier = Modifier.weight(1f).fillMaxWidth().background(Color(0xFF000000).copy(alpha = 0.6f)).padding(12.dp)) {
@@ -61,9 +61,14 @@ fun TerminalScreen() {
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        logs.add("INJECTING CODE...")
+                        // ★ Windows専用のド派手なインジェクション・ログ演出！
+                        logs.add("INJECTING WINDOWS PAYLOAD...")
+                        delay(300)
+                        logs.add("BYPASSING DEFENSES...")
+                        delay(300)
+                        logs.add("C:\\Windows\\System32... ACCESSED.")
                         delay(400)
-                        logs.add("SUCCESS.")
+                        logs.add("SUCCESS. WINDOWS NODE FULLY COMPROMISED.")
                     }
                 },
                 modifier = Modifier.weight(1f).height(50.dp),
